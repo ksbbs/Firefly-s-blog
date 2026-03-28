@@ -24,13 +24,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
-			url: "https://github.com/wha7ever",
-			showName: false,
-		},
-		{
-			name: "Email",
-			icon: "fa7-solid:envelope",
-			url: "mailto:your@email.com",
+			url: "https://github.com/ksbbs",
 			showName: false,
 		},
 		{
