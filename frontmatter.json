@@ -12,7 +12,7 @@
   "frontMatter.taxonomy.contentTypes": [
     {
       "name": "default",
-      "pageBundle": true,
+      "pageBundle": false,
       "previewPath": "'blog'",
       "filePrefix": null,
       "clearEmpty": true,
