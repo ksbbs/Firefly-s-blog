@@ -59,6 +59,7 @@ interface Props {
 	modifiedTime?: Date;
 	tags?: string[];
 	articleImage?: string;
+	noIndex?: boolean;
 }
 
 const backgroundImages = getBackgroundImages();
@@ -76,6 +77,7 @@ const {
 	modifiedTime,
 	tags,
 	articleImage,
+	noIndex = false,
 } = Astro.props;
 
 // 检查背景壁纸模式和是否允许切换
@@ -289,7 +291,7 @@ const bannerCarouselInterval = Math.max(
 );
 ---
 
-<Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug} publishedTime={publishedTime} modifiedTime={modifiedTime} tags={tags} articleImage={articleImage}>
+<Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle} postSlug={postSlug} publishedTime={publishedTime} modifiedTime={modifiedTime} tags={tags} articleImage={articleImage} noIndex={noIndex}>
 
 
 <!-- 为全屏壁纸模式添加body类 -->
@@ -966,4 +968,3 @@ const bannerCarouselInterval = Math.max(
   }
 
 </style>
-

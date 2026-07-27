@@ -113,9 +113,9 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			},
 			url: {
 				// 桌面端原始艺术品或艺术家页面的 URL 链接
-				desktop: "https://www.wha7ever.qzz.io",
+				desktop: "https://blog.282126.xyz",
 				// 移动端原始艺术品或艺术家页面的 URL 链接
-				mobile: "https://www.wha7ever.qzz.io",
+				mobile: "https://blog.282126.xyz",
 			},
 		},
 		// 横幅导航栏配置
