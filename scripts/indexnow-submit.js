@@ -9,15 +9,51 @@
  */
 
 const INDEXNOW_KEY_FILE = "public/indexnow-key.txt";
+const FETCH_TIMEOUT_MS = 30_000;
+const MAX_SITEMAP_DEPTH = 5;
 
-async function getKey() {
-	if (process.env.INDEXNOW_KEY) return process.env.INDEXNOW_KEY;
-	const fs = await import("node:fs");
-	return fs.readFileSync(INDEXNOW_KEY_FILE, "utf8").trim();
+async function fetchWithTimeout(url, optionsOrTimeout, extraOptions) {
+	const timeoutMs =
+		typeof optionsOrTimeout === "number" ? optionsOrTimeout : FETCH_TIMEOUT_MS;
+	const fetchOptions =
+		typeof optionsOrTimeout === "object"
+			? optionsOrTimeout
+			: extraOptions || {};
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), timeoutMs);
+	try {
+		return await fetch(url, { ...fetchOptions, signal: controller.signal });
+	} finally {
+		clearTimeout(timer);
+	}
 }
 
-async function fetchSitemapUrls(sitemapUrl) {
-	const resp = await fetch(sitemapUrl);
+async function getKey() {
+	if (process.env.INDEXNOW_KEY)
+		return { key: process.env.INDEXNOW_KEY, isEnv: true };
+	const fs = await import("node:fs");
+	return {
+		key: fs.readFileSync(INDEXNOW_KEY_FILE, "utf8").trim(),
+		isEnv: false,
+	};
+}
+
+async function fetchSitemapUrls(sitemapUrl, visited = new Set(), depth = 0) {
+	if (depth > MAX_SITEMAP_DEPTH) {
+		console.warn(
+			`[IndexNow] 达到最大递归深度 ${MAX_SITEMAP_DEPTH}，停止解析子 sitemap`,
+		);
+		return [];
+	}
+
+	const normalizedUrl = sitemapUrl.replace(/\/$/, "");
+	if (visited.has(normalizedUrl)) {
+		console.warn(`[IndexNow] 跳过已访问的 sitemap: ${sitemapUrl}`);
+		return [];
+	}
+	visited.add(normalizedUrl);
+
+	const resp = await fetchWithTimeout(sitemapUrl);
 	if (!resp.ok) throw new Error(`无法获取 sitemap: ${resp.status}`);
 	const xml = await resp.text();
 	const locs = [];
@@ -35,7 +71,7 @@ async function fetchSitemapUrls(sitemapUrl) {
 		);
 		const pageUrls = [];
 		for (const childUrl of locs) {
-			const childUrls = await fetchSitemapUrls(childUrl);
+			const childUrls = await fetchSitemapUrls(childUrl, visited, depth + 1);
 			pageUrls.push(...childUrls);
 		}
 		return pageUrls;
@@ -44,19 +80,24 @@ async function fetchSitemapUrls(sitemapUrl) {
 	return locs;
 }
 
-async function submit(key, urls) {
+async function submit(key, keyFromEnv, urls) {
 	const host = new URL(urls[0]).hostname;
 	const endpoint = "https://api.indexnow.org/indexnow";
+	// keyLocation 应指向实际部署的 key 文件路径（env 注入或公开文件）
+	const keyLocation = keyFromEnv
+		? `https://${host}/indexnow-key.txt`
+		: `https://${host}/indexnow-key.txt`;
 
+	const errors = [];
 	for (let i = 0; i < urls.length; i += 100) {
 		const batch = urls.slice(i, i + 100);
 		const payload = {
 			host,
 			key,
-			keyLocation: `https://${host}/indexnow-key.txt`,
+			keyLocation,
 			urlList: batch,
 		};
-		const resp = await fetch(endpoint, {
+		const resp = await fetchWithTimeout(endpoint, FETCH_TIMEOUT_MS, {
 			method: "POST",
 			headers: { "Content-Type": "application/json; charset=utf-8" },
 			body: JSON.stringify(payload),
@@ -66,16 +107,19 @@ async function submit(key, urls) {
 				`[IndexNow] 已提交 ${batch.length} 个 URL（批次 ${Math.floor(i / 100) + 1}）`,
 			);
 		} else {
-			console.error(
-				`[IndexNow] 提交失败（批次 ${Math.floor(i / 100) + 1}）: ${resp.status}`,
-				await resp.text(),
-			);
+			const errMsg = `[IndexNow] 提交失败（批次 ${Math.floor(i / 100) + 1}）: ${resp.status} ${await resp.text()}`;
+			console.error(errMsg);
+			errors.push(errMsg);
 		}
+	}
+
+	if (errors.length > 0) {
+		throw new Error(`IndexNow 提交部分失败:\n${errors.join("\n")}`);
 	}
 }
 
 async function main() {
-	const key = await getKey();
+	const { key, isEnv } = await getKey();
 	if (!key) {
 		console.error(
 			"[IndexNow] 缺少 IndexNow key，请设置 INDEXNOW_KEY 环境变量或确保 public/indexnow-key.txt 存在",
@@ -97,7 +141,7 @@ async function main() {
 		console.error("[IndexNow] sitemap 中没有找到页面 URL，跳过提交");
 		process.exit(0);
 	}
-	await submit(key, urls);
+	await submit(key, isEnv, urls);
 	console.log("[IndexNow] 完成");
 }
 

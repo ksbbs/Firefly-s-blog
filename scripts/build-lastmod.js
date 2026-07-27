@@ -31,8 +31,8 @@ function collectFiles(dir) {
 
 /** 从 markdown frontmatter 块中提取日期字段 */
 function extractFrontmatterDate(content, key) {
-	// 提取 --- 之间的 frontmatter 块
-	const fmMatch = content.match(/^---\s*\n([\s\S]*?)\n---/m);
+	// 提取 --- 之间的 frontmatter 块（开头 --- 必须从文档首行开始）
+	const fmMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
 	if (!fmMatch) return null;
 	const fm = fmMatch[1];
 	const re = new RegExp(`^${key}:\\s*(.+)$`, "m");
