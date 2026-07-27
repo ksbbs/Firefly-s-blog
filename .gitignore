@@ -43,3 +43,6 @@ package/
 
 # kit
 .kilo/
+
+# IndexNow key — 每人独立生成，不共享
+public/indexnow-key.txt

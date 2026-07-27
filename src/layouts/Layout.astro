@@ -100,6 +100,10 @@ let ogImageUrl: string | undefined;
 if (siteConfig.generateOgImages && postSlug) {
 	ogImageUrl = new URL(`/og/${postSlug}.png`, Astro.site).toString();
 }
+// 首页 / 非文章页兜底：无封面图时使用站点图标，避免社交分享空白摘要
+if (!ogImageUrl && !articleImage) {
+	ogImageUrl = new URL("/favicon/favicon-light-180.png", Astro.site).toString();
+}
 
 const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
@@ -235,8 +239,27 @@ const siteLang = lang.replace("_", "-");
       },
     })} />
 
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: profileConfig.name,
+      url: siteConfig.site_url,
+      ...(profileConfig.bio && { description: profileConfig.bio }),
+      ...(profileConfig.sameAs?.length && { sameAs: profileConfig.sameAs }),
+    })} />
+
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    {
+      siteConfig.verification?.google && (
+        <meta name="google-site-verification" content={siteConfig.verification.google} />
+      )
+    }
+    {
+      siteConfig.verification?.bing && (
+        <meta name="msvalidate.01" content={siteConfig.verification.bing} />
+      )
+    }
     {
       favicons.map((favicon) => (
         <link

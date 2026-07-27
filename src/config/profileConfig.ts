@@ -14,6 +14,9 @@ export const profileConfig: ProfileConfig = {
 	// 个人签名
 	bio: "微光闪耀，星途永存 ✨",
 
+	// 社交平台链接，用于 Person schema sameAs（增强 E-E-A-T 权威信号）
+	sameAs: ["https://github.com/ksbbs"],
+
 	// 链接配置
 	// 已经预装的图标集：fa7-brands，fa7-regular，fa7-solid，material-symbols，simple-icons
 	// 访问https://icones.js.org/ 获取图标代码，
@@ -24,7 +27,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "GitHub",
 			icon: "fa7-brands:github",
-			url: "https://github.com/ksbbs",
+			url: "https://github.com/wha7ev9r",
 			showName: false,
 		},
 		{

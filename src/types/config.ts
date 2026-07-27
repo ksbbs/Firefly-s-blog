@@ -7,6 +7,12 @@ import type {
 	WALLPAPER_OVERLAY,
 } from "../constants/constants";
 
+export type VerificationConfig = {
+	google?: string; // Google Search Console 验证 token
+	bing?: string; // Bing Webmaster 验证 token
+	baidu?: string; // 百度站长 验证 token
+};
+
 export type SiteConfig = {
 	title: string;
 	subtitle: string;
@@ -15,6 +21,9 @@ export type SiteConfig = {
 	keywords?: string[]; // 站点关键词，用于生成 <meta name="keywords">
 
 	lang: "en" | "zh_CN" | "zh_TW" | "ja" | "ru";
+
+	/** 搜索引擎站长平台验证 token，留空不输出 meta 标签 */
+	verification?: VerificationConfig;
 
 	themeColor: {
 		hue: number;
@@ -196,6 +205,8 @@ export type ProfileConfig = {
 	avatar?: string;
 	name: string;
 	bio?: string;
+	/** 社交平台链接，用于 Person 结构化数据的 sameAs（E-E-A-T 权威信号） */
+	sameAs?: string[];
 	links: {
 		name: string;
 		url: string;
