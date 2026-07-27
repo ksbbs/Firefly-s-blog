@@ -85,31 +85,7 @@ async function fetchSitemapUrls(sitemapUrl, visited = new Set(), depth = 0) {
 async function submit(key, keyFromEnv, urls) {
 	const host = new URL(urls[0]).hostname;
 	const endpoint = "https://api.indexnow.org/indexnow";
-
-	// keyLocation 应指向实际部署的 key 文件路径（env 注入或公开文件）
-	let keyLocation;
-	if (keyFromEnv) {
-		// 当使用环境变量时，确保 public/indexnow-key.txt 存在且内容匹配
-		const fs = await import("node:fs");
-		try {
-			const fileKey = fs.readFileSync(INDEXNOW_KEY_FILE, "utf8").trim();
-			if (fileKey !== key) {
-				throw new Error(
-					`public/indexnow-key.txt 内容与 INDEXNOW_KEY 环境变量不匹配`,
-				);
-			}
-			keyLocation = `https://${host}/indexnow-key.txt`;
-		} catch (err) {
-			if (err.code === "ENOENT") {
-				throw new Error(
-					`使用 INDEXNOW_KEY 环境变量时需要 public/indexnow-key.txt 文件存在，或配置显式的公开 key URL`,
-				);
-			}
-			throw err;
-		}
-	} else {
-		keyLocation = `https://${host}/indexnow-key.txt`;
-	}
+	const keyLocation = `https://${host}/indexnow-key.txt`;
 
 	const errors = [];
 	for (let i = 0; i < urls.length; i += 100) {
