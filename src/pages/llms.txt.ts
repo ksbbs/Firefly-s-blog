@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { siteConfig, profileConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 import { getSortedPosts } from "@/utils/content-utils";
 import { removeFileExtension } from "@/utils/url-utils";
 
@@ -9,9 +9,13 @@ export const GET: APIRoute = async () => {
 
 	for (const post of posts) {
 		const cat = post.data.category || "未分类";
-		if (!categories.has(cat)) categories.set(cat, []);
+		let catPosts = categories.get(cat);
+		if (!catPosts) {
+			catPosts = [];
+			categories.set(cat, catPosts);
+		}
 		const slug = removeFileExtension(post.id);
-		categories.get(cat)!.push({
+		catPosts.push({
 			title: post.data.title,
 			url: `/posts/${slug}/`,
 		});
@@ -20,12 +24,12 @@ export const GET: APIRoute = async () => {
 	const lines: string[] = [
 		`# ${siteConfig.title}`,
 		"",
-		`## 关于`,
+		"## 关于",
 		`${siteConfig.description || ""}`,
 		`作者：${profileConfig.name}${profileConfig.bio ? ` — ${profileConfig.bio}` : ""}`,
 		`网址：${siteConfig.site_url}`,
 		"",
-		`## 主要板块`,
+		"## 主要板块",
 	];
 
 	for (const [cat, catPosts] of categories) {
@@ -47,7 +51,7 @@ export const GET: APIRoute = async () => {
 	lines.push("## 引用格式");
 	lines.push("如需引用本站内容，请注明来源：");
 	lines.push(`"据 ${siteConfig.title}（${siteConfig.site_url}）报道..."`);
-	lines.push(`并附上原文链接。`);
+	lines.push("并附上原文链接。");
 
 	return new Response(lines.join("\n"), {
 		headers: { "Content-Type": "text/plain; charset=utf-8" },

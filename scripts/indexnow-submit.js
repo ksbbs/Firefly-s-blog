@@ -17,8 +17,8 @@ async function getKey() {
 }
 
 async function fetchSitemapUrls(sitemapUrl) {
-	// 简单解析 XML sitemap 中的 <loc> 标签
 	const resp = await fetch(sitemapUrl);
+	if (!resp.ok) throw new Error(`无法获取 sitemap: ${resp.status}`);
 	const xml = await resp.text();
 	const locs = [];
 	const re = /<loc>([^<]+)<\/loc>/g;
@@ -26,6 +26,21 @@ async function fetchSitemapUrls(sitemapUrl) {
 	while ((m = re.exec(xml)) !== null) {
 		locs.push(m[1]);
 	}
+
+	// 检测是否为 sitemap index（包含子 sitemap），递归展开
+	const isIndex = /<sitemapindex[\s>]/i.test(xml);
+	if (isIndex && locs.length > 0) {
+		console.log(
+			`[IndexNow] 检测到 sitemap index，递归解析 ${locs.length} 个子 sitemap...`,
+		);
+		const pageUrls = [];
+		for (const childUrl of locs) {
+			const childUrls = await fetchSitemapUrls(childUrl);
+			pageUrls.push(...childUrls);
+		}
+		return pageUrls;
+	}
+
 	return locs;
 }
 
@@ -78,6 +93,10 @@ async function main() {
 
 	const urls = await fetchSitemapUrls(sitemapUrl);
 	console.log(`[IndexNow] 从 sitemap 提取到 ${urls.length} 个 URL`);
+	if (urls.length === 0) {
+		console.error("[IndexNow] sitemap 中没有找到页面 URL，跳过提交");
+		process.exit(0);
+	}
 	await submit(key, urls);
 	console.log("[IndexNow] 完成");
 }

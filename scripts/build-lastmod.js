@@ -29,15 +29,17 @@ function collectFiles(dir) {
 	return files;
 }
 
-/** 用正则从 markdown 中提取 frontmatter 的 published / updated 日期 */
-function extractDate(content, key) {
+/** 从 markdown frontmatter 块中提取日期字段 */
+function extractFrontmatterDate(content, key) {
+	// 提取 --- 之间的 frontmatter 块
+	const fmMatch = content.match(/^---\s*\n([\s\S]*?)\n---/m);
+	if (!fmMatch) return null;
+	const fm = fmMatch[1];
 	const re = new RegExp(`^${key}:\\s*(.+)$`, "m");
-	const m = content.match(re);
+	const m = fm.match(re);
 	if (!m) return null;
 	const raw = m[1].trim();
-	// 去掉可能的引号
 	const cleaned = raw.replace(/^["']|["']$/g, "");
-	// 尝试解析，返回 ISO 格式
 	const d = new Date(cleaned);
 	if (Number.isNaN(d.getTime())) return null;
 	return d.toISOString();
@@ -57,8 +59,8 @@ function main() {
 	for (const file of files) {
 		const slug = fileToSlug(file);
 		const content = fs.readFileSync(file, "utf8");
-		const updated = extractDate(content, "updated");
-		const published = extractDate(content, "published");
+		const updated = extractFrontmatterDate(content, "updated");
+		const published = extractFrontmatterDate(content, "published");
 		const date = updated || published;
 		if (!date) {
 			console.warn(

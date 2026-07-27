@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
-import { siteConfig, profileConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 import { getSortedPosts } from "@/utils/content-utils";
-import { removeFileExtension } from "@/utils/url-utils";
 import { formatDateToYYYYMMDD } from "@/utils/date-utils";
+import { removeFileExtension } from "@/utils/url-utils";
 
 export const GET: APIRoute = async () => {
 	const posts = await getSortedPosts();

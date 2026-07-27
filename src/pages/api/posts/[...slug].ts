@@ -1,14 +1,17 @@
-import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
+import type { APIRoute } from "astro";
+import { removeFileExtension } from "@/utils/url-utils";
 
 export async function getStaticPaths() {
 	const posts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
-	return posts.map((post) => ({
-		params: { slug: post.id.replace(/\.(md|mdx)$/i, "") },
-		props: { body: post.body || "" },
-	}));
+	return posts
+		.filter((post) => !post.data.password)
+		.map((post) => ({
+			params: { slug: removeFileExtension(post.id) },
+			props: { body: post.body || "" },
+		}));
 }
 
 export const GET: APIRoute = ({ props }) => {
