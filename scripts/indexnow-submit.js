@@ -30,7 +30,7 @@ async function fetchWithTimeout(url, optionsOrTimeout, extraOptions) {
 
 async function getKey() {
 	if (process.env.INDEXNOW_KEY)
-		return { key: process.env.INDEXNOW_KEY, isEnv: true };
+		return { key: process.env.INDEXNOW_KEY.trim(), isEnv: true };
 	const fs = await import("node:fs");
 	return {
 		key: fs.readFileSync(INDEXNOW_KEY_FILE, "utf8").trim(),
@@ -43,7 +43,9 @@ async function fetchSitemapUrls(sitemapUrl, visited = new Set(), depth = 0) {
 		console.warn(
 			`[IndexNow] 达到最大递归深度 ${MAX_SITEMAP_DEPTH}，停止解析子 sitemap`,
 		);
-		return [];
+		throw new Error(
+			`sitemap 递归深度超过限制 ${MAX_SITEMAP_DEPTH}，无法完整解析`,
+		);
 	}
 
 	const normalizedUrl = sitemapUrl.replace(/\/$/, "");
@@ -83,10 +85,31 @@ async function fetchSitemapUrls(sitemapUrl, visited = new Set(), depth = 0) {
 async function submit(key, keyFromEnv, urls) {
 	const host = new URL(urls[0]).hostname;
 	const endpoint = "https://api.indexnow.org/indexnow";
+
 	// keyLocation 应指向实际部署的 key 文件路径（env 注入或公开文件）
-	const keyLocation = keyFromEnv
-		? `https://${host}/indexnow-key.txt`
-		: `https://${host}/indexnow-key.txt`;
+	let keyLocation;
+	if (keyFromEnv) {
+		// 当使用环境变量时，确保 public/indexnow-key.txt 存在且内容匹配
+		const fs = await import("node:fs");
+		try {
+			const fileKey = fs.readFileSync(INDEXNOW_KEY_FILE, "utf8").trim();
+			if (fileKey !== key) {
+				throw new Error(
+					`public/indexnow-key.txt 内容与 INDEXNOW_KEY 环境变量不匹配`,
+				);
+			}
+			keyLocation = `https://${host}/indexnow-key.txt`;
+		} catch (err) {
+			if (err.code === "ENOENT") {
+				throw new Error(
+					`使用 INDEXNOW_KEY 环境变量时需要 public/indexnow-key.txt 文件存在，或配置显式的公开 key URL`,
+				);
+			}
+			throw err;
+		}
+	} else {
+		keyLocation = `https://${host}/indexnow-key.txt`;
+	}
 
 	const errors = [];
 	for (let i = 0; i < urls.length; i += 100) {
