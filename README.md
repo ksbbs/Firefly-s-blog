@@ -133,6 +133,7 @@
 
 - **参考[官方指南](https://docs.astro.build/zh-cn/guides/deploy/)将博客部署至 Vercel, Netlify, Cloudflare Pages, EdgeOne Pages 等。**
 - **Vercel**、**Netlify** 等主流平台自动部署，会根据环境自动选择适配器。
+- 本仓库当前通过 **Cloudflare Pages** 部署。
 
   框架预设： `Astro`
 
@@ -146,6 +147,13 @@
 
   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/CuteLeaf/Firefly&project-name=Firefly&repository-name=Firefly)
   [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/CuteLeaf/Firefly)
+
+### 搜索引擎收录
+
+- 站点地图索引位于生产域名的 `/sitemap-index.xml`。
+- Google Search Console 和 Bing Webmaster Tools 提交站点地图索引。
+- 百度搜索资源平台优先提交生产域名的 `/sitemap-0.xml`。
+- Cloudflare Pages 的浏览器缓存与 `pages.dev` 防重复索引规则位于 `public/_headers`。
 
 ## 📖 配置说明
 
@@ -215,16 +223,16 @@ comment: true # 是否允许评论
 
 ## 📝 使用 Pages CMS 管理内容
 
-本仓库支持通过 [Pages CMS](https://pagescms.org) 在线编辑博客内容，采用 **staging → master** 双分支工作流避免每次保存触发 Vercel 构建。
+本仓库支持通过 [Pages CMS](https://pagescms.org) 在线编辑博客内容，采用 **staging → master** 双分支工作流避免每次保存触发 Cloudflare Pages 生产构建。
 
 ### 工作流程
 
 1. **日常编辑** — 在 Pages CMS 中切换到 `staging` 分支进行文章修改
    - 访问 `https://pagescms.org/repos/{你的用户名}/{仓库名}/?branch=staging`
-   - 每次保存只会 commit 到 `staging` 分支，不会触发 Vercel 生产构建
+   - 每次保存只会 commit 到 `staging` 分支，不会触发 Cloudflare Pages 生产构建
 2. **发布上线** — 修改完成后，在 Pages CMS 侧边栏点击 **"发布到生产环境"** 按钮
    - 自动触发 GitHub Actions 将 `staging` 分支合并到 `master`
-   - Vercel 检测到 `master` 变更后自动构建部署
+   - Cloudflare Pages 检测到 `master` 变更后自动构建部署
 3. **自动同步** — 当 `master` 通过其他方式（如 PR 合并）更新时，会通过 GitHub Actions 自动合并到 `staging`，保持两个分支同步
 
 ### 首次使用

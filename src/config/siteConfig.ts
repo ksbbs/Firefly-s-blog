@@ -13,7 +13,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "微光闪耀，星途永存",
 
 	// 站点 URL
-	site_url: "https://www.wha7ever.qzz.io",
+	site_url: "https://blog.282126.xyz",
 
 	// 站点描述
 	description:

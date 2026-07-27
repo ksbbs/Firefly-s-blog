@@ -45,6 +45,7 @@ interface Props {
 	modifiedTime?: Date;
 	tags?: string[];
 	articleImage?: string;
+	noIndex?: boolean;
 }
 
 let {
@@ -58,6 +59,7 @@ let {
 	modifiedTime,
 	tags,
 	articleImage,
+	noIndex = false,
 } = Astro.props;
 
 // apply a class to the body element to decide the height of the banner, only used for initial page load
@@ -177,6 +179,7 @@ const siteLang = lang.replace("_", "-");
       )
     }
     <meta name="author" content={profileConfig.name} />
+    {noIndex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={Astro.url} />
 
     <meta property="og:site_name" content={siteConfig.title} />
