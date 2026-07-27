@@ -156,7 +156,7 @@ export default defineConfig({
 			filter: (page) => {
 				const url = new URL(page);
 				const pathname = url.pathname;
-				const excludedPages = new Set(["/search/", "/rss/"]);
+				const excludedPages = new Set(["/search/", "/rss/", "/rss.xml"]);
 
 				if (excludedPages.has(pathname)) {
 					return false;
