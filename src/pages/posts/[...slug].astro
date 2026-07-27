@@ -186,7 +186,15 @@ const relatedPosts = await getRelatedPosts(entry, 5);
 >
   <!-- KaTeX 按需加载 - 仅在文章页面 -->
   <KatexManager slot="head" />
-  
+  <link
+    rel="alternate"
+    type="text/markdown"
+    href={new URL(
+      `/api/posts/${removeFileExtension(entry.id)}/`,
+      Astro.site,
+    ).href}
+    slot="head"
+  />
   <script
     is:inline
     slot="head"

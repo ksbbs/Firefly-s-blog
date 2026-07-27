@@ -21,6 +21,7 @@ export type {
 	SponsorConfig,
 	SponsorItem,
 	SponsorMethod,
+	VerificationConfig,
 	WidgetComponentConfig,
 	WidgetComponentType,
 } from "../types/config";

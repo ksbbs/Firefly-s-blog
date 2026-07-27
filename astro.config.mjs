@@ -1,6 +1,7 @@
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwindcss from "@tailwindcss/vite";
+import fs from "node:fs";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
@@ -31,6 +32,37 @@ import rehypeExternalLinks from "./src/plugins/rehype-external-links.mjs";
 import rehypeFigure from "./src/plugins/rehype-figure.mjs";
 import rehypeKatexMhchem from "./src/plugins/rehype-katex-mhchem.mjs";
 import { remarkImageGrid } from "./src/plugins/remark-image-grid.js";
+
+// --- sitemap lastmod 缓存 ---
+/** @type {Record<string, string> | null} */
+let _lastmodMap = null;
+/** @type {Record<string, string> | null} */
+let _normalizedLastmodMap = null;
+/** 标准化 slug：移除 Astro URL 编码时会被丢弃的 CJK 标点 */
+const normalizeSlug = (s) =>
+	s.replace(/[^\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\w-]/g, "");
+/** @returns {Record<string, string>} */
+function getNormalizedLastmodMap() {
+	if (_normalizedLastmodMap) return _normalizedLastmodMap;
+	const raw = getLastmodMap();
+	_normalizedLastmodMap = {};
+	for (const [slug, date] of Object.entries(raw)) {
+		_normalizedLastmodMap[normalizeSlug(slug)] = date;
+	}
+	return _normalizedLastmodMap;
+}
+/** @returns {Record<string, string>} */
+function getLastmodMap() {
+	if (_lastmodMap) return _lastmodMap;
+	try {
+		_lastmodMap = JSON.parse(
+			fs.readFileSync("./src/generated/post-lastmod.json", "utf8"),
+		);
+	} catch {
+		_lastmodMap = {};
+	}
+	return _lastmodMap;
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -182,6 +214,27 @@ export default defineConfig({
 				}
 
 				return true;
+			},
+			serialize: (item) => {
+				const map = getNormalizedLastmodMap();
+				const url = new URL(item.url);
+				const pathname = decodeURIComponent(url.pathname);
+				if (pathname.startsWith("/posts/")) {
+					const slug = normalizeSlug(
+						pathname.replace(/^\/posts\//, "").replace(/\/$/, ""),
+					);
+					if (map[slug]) {
+						item.lastmod = map[slug];
+					}
+				}
+				// 首页 lastmod 为最新文章日期
+				if (pathname === "/" || pathname === "") {
+					const dates = Object.values(map).sort().reverse();
+					if (dates.length > 0) {
+						item.lastmod = dates[0];
+					}
+				}
+				return item;
 			},
 		}),
 		mdx(),

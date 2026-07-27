@@ -123,6 +123,12 @@ export const siteConfig: SiteConfig = {
 		categoryOrder: ["anime", "book", "music", "game"],
 	},
 
+	// 搜索引擎站长平台验证 token，留空不输出 meta 标签
+	verification: {
+		google: "",
+		bing: "",
+	},
+
 	// 页面开关配置 - 控制特定页面的访问权限，设为false会返回404
 	// bangumi的数据为编译时获取的，所以不是实时数据，请配置bangumi.userId
 	pages: {
