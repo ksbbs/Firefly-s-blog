@@ -9,16 +9,27 @@ allowBuilds:
 
 overrides:
   undici: "7.28.0"
-  tar: "7.5.20"
+  tar: "7.5.21"
   "@babel/core": "7.29.6"
   "@babel/plugin-transform-modules-systemjs": "7.29.7"
   "brace-expansion@<1.1.13": "1.1.16"
-  "brace-expansion@>=2.0.0 <2.0.3": "2.0.3"
+  "brace-expansion@>=2.0.0 <2.1.2": "2.1.2"
   "js-yaml@<3.15.0": "3.15.0"
-  "js-yaml@>=4.0.0 <4.2.0": "4.2.0"
+  "js-yaml@>=4.0.0 <4.3.0": "4.3.0"
   "minimatch@<3.1.4": "3.1.4"
   "minimatch@>=5.0.0 <5.1.8": "5.1.8"
   "minimatch@>=9.0.0 <9.0.7": "9.0.7"
   "minimatch@>=10.0.0 <10.2.3": "10.2.3"
   "@isaacs/brace-expansion@<5.0.1": "5.0.1"
+  "brace-expansion@>=5.0.0 <5.0.8": "5.0.8"
+  "svgo@>=1.0.0 <2.8.3": "2.8.3"
+  "svgo@>=3.0.0 <3.3.4": "3.3.4"
+  "svgo@>=4.0.0 <4.0.2": "4.0.2"
+  "fast-uri@>=3.0.0 <3.1.4": "3.1.4"
+  "fast-xml-parser@>=5.9.3 <5.10.1": "5.10.1"
+  "postcss@<=8.5.17": "8.5.18"
   "serialize-javascript@<7.0.5": "7.0.5"
+  "astro@>=7.0.0 <7.1.4": "7.1.4"
+
+minimumReleaseAgeExclude:
+  - astro@7.1.4

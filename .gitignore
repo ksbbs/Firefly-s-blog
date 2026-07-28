@@ -30,6 +30,7 @@ yarn.lock
 .idea
 *.iml
 .claude
+.opencode/
 
 # frontmatter cms local database
 .frontmatter/database/
