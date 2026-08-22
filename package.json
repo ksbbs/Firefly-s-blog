@@ -8,7 +8,7 @@
 	"devEngines": {
 		"packageManager": {
 			"name": "pnpm",
-			"version": "11.14.0",
+			"version": "11.22.0",
 			"onFail": "download"
 		}
 	},
@@ -82,7 +82,7 @@
 		"sharp": "^0.35.3",
 		"stylus": "^0.64.0",
 		"svelte": "^5.56.9",
-		"typescript": "^5.9.2",
+		"typescript": "^6.0.3",
 		"unist-util-is": "^6.0.1",
 		"unist-util-visit": "^5.1.0",
 		"unist-util-visit-parents": "^6.0.2"
@@ -102,5 +102,5 @@
 		"postcss-import": "^16.1.1",
 		"tailwindcss": "^4.3.3"
 	},
-	"packageManager": "pnpm@11.14.0"
+	"packageManager": "pnpm@11.22.0"
 }
