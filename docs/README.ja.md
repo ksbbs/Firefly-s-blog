@@ -7,9 +7,9 @@
 > 美しくモダンな Astro 静的ブログテーマテンプレート
 >
 > ![Node.js >= 22](https://img.shields.io/badge/node.js-%3E%3D22-brightgreen)
-> ![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
-> ![Astro](https://img.shields.io/badge/Astro-7.0.7-orange)
-> ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue)
+> ![pnpm >= 11](https://img.shields.io/badge/pnpm-%3E%3D11-blue)
+> ![Astro](https://img.shields.io/badge/Astro-7.2.2-orange)
+> ![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-blue)
 >
 > [![Stars](https://img.shields.io/github/stars/CuteLeaf/Firefly?style=social)](https://github.com/CuteLeaf/Firefly/stargazers)
 > [![Forks](https://img.shields.io/github/forks/CuteLeaf/Firefly?style=social)](https://github.com/CuteLeaf/Firefly/network/members)
@@ -114,7 +114,7 @@
 
    ```bash
    # pnpmがインストールされていない場合、リポジトリで必要なバージョンをインストール
-   npm install -g pnpm@9.14.4
+   npm install -g pnpm@11.22.0
 
    # プロジェクトの依存関係をインストール
    pnpm install

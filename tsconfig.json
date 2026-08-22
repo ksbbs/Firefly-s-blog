@@ -15,9 +15,6 @@
       }
     ],
     "paths": {
-      "@rehype-callouts-theme": [
-        "./src/types/rehype-callouts-theme.d.ts"
-      ],
       "@components/*": [
         "./src/components/*"
       ],

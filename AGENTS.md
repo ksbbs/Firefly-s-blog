@@ -4,8 +4,8 @@ OpenCode 在 Firefly 仓库的工作指引。只保留容易误判或需要跨�
 
 ## 项目与工具链
 
-- 单包 Astro 7.0.7 静态博客主题，不是 monorepo；UI 主要是 `.astro` + Svelte 5，Tailwind CSS 4 通过 `@tailwindcss/vite` 接入。
-- 必须用 pnpm：`packageManager` 固定 `pnpm@11.14.0`，`devEngines.packageManager`（`onFail: download`）负责校验并自动下载匹配版本；npm/yarn 误用会被 `EBADDEVENGINES` 拦截（原 `preinstall` 的 only-allow 已移除）。
+- 单包 Astro 7.2.2 静态博客主题，不是 monorepo；UI 主要是 `.astro` + Svelte 5，Tailwind CSS 4 通过 `@tailwindcss/vite` 接入。
+- 必须用 pnpm：`packageManager` 固定 `pnpm@11.22.0`，`devEngines.packageManager`（`onFail: download`）负责校验并自动下载匹配版本；npm/yarn 误用会被 `EBADDEVENGINES` 拦截（原 `preinstall` 的 only-allow 已移除）。
 - Node 版本按仓库要求使用 `>=22`；CI 在 Node 22 和 24 上跑 check/build。
 - `.npmrc` 仅保留 npmmirror/淘宝 registry 配置（pnpm 11 不再从 .npmrc 读取其他设置，原 sharp 等二进制镜像配置已随迁移移除）；`engineStrict` 已移至 `pnpm-workspace.yaml`。除非明确要切源，不要改动 registry。
 - 安全覆盖统一放在 `pnpm-workspace.yaml` 顶层 `overrides`（undici、tar、minimatch、serialize-javascript、@babel/*、brace-expansion、js-yaml 等），更新锁文件时注意保留。pnpm 11 起 `package.json` 的 `pnpm` 字段不再被读取，不要写回那里。
@@ -34,7 +34,8 @@ OpenCode 在 Firefly 仓库的工作指引。只保留容易误判或需要跨�
 - 配置集中在 `src/config/`，统一出口是 `src/config/index.ts`；新增配置要同时考虑 `src/types/config.ts` 和统一导出。
 - `siteConfig.pages` 不只是导航开关：页面自身会 redirect/404，`astro.config.mjs` 的 sitemap filter 也会按它过滤。
 - 修改 `siteConfig.rehypeCallouts.theme`、语言、页面开关等会影响 Astro/Vite 配置或构建期代码，开发服务器通常需要重启。
-- 常用别名来自 `tsconfig.json`：`@/*`、`@components/*`、`@layouts/*`、`@utils/*`、`@i18n/*`、`@constants/*`、`@assets/*`。
+- 常用别名来自 `tsconfig.json`：`@/*`、`@components/*`、`@layouts/*`、`@utils/*`、`@i18n/*`、`@constants/*`、`@assets/*`；`tsconfig.json` 已无 `baseUrl`（TS 6 起弃用），`paths` 必须写成 `./src/...` 的显式相对路径。
+- `astro.config.mjs` 里 `resolve.alias` 的 `@rehype-callouts-theme` 是构建期别名（指向 `rehype-callouts/theme/<主题>`），TS 侧靠 `src/types/rehype-callouts-theme.d.ts` 的 `declare module` 兜住。该文件必须保持纯 ambient（无任何顶层 `import`/`export`），否则 `declare module` 会退化成 module augmentation 而失效 —— `src/global.d.ts`、`src/env.d.ts` 都有顶层 export，不能往里加此类声明。
 
 ## 内容与 i18n
 

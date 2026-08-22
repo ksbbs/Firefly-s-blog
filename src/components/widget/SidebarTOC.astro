@@ -6,12 +6,15 @@ import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
 
 interface Props {
+	// SideBar 会把 headings 透传进来（见 SideBar.astro 的 componentMap），
+	// 但目录条目由下方脚本的 TOCManager 在客户端从 DOM 标题实时生成，
+	// 因此此处只声明契约、不消费该值。
 	headings?: MarkdownHeading[];
 	class?: string;
 	style?: string;
 }
 
-const { headings: _headings = [], class: className, style } = Astro.props;
+const { class: className, style } = Astro.props;
 ---
 
 <WidgetLayout 

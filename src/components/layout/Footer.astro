@@ -22,7 +22,7 @@ if (footerConfig.enable) {
 	} catch (error) {
 		console.warn(
 			"FooterConfig.html文件读取失败:",
-			error instanceof Error ? error.message : error,
+			error instanceof Error ? error.message : "未知错误",
 		);
 	}
 }
