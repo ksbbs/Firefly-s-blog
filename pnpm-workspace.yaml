@@ -25,13 +25,15 @@ overrides:
   "svgo@>=1.0.0 <2.8.3": "2.8.3"
   "svgo@>=3.0.0 <3.3.4": "3.3.4"
   "svgo@>=4.0.0 <4.0.2": "4.0.2"
-  "fast-uri@>=3.0.0 <3.1.5": "3.1.5"
+  "fast-uri@>=3.0.0 <3.1.6": "3.1.6"
   "fast-xml-parser@>=5.9.3 <5.10.1": "5.10.1"
   "postcss@<=8.5.22": "8.5.23"
   "serialize-javascript@<7.0.5": "7.0.5"
   "astro@>=7.0.0 <7.1.4": "7.1.4"
   "style-to-js@<1.1.21": "1.1.21"
   "style-to-object@<1.0.14": "1.0.14"
+  "browserslist@<4.28.7": "4.28.8"
+  "fflate@<0.7.5": "0.7.5"
 
 minimumReleaseAgeExclude:
   - astro@7.1.4
